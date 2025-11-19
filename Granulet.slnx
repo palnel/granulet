@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Console/">
+    <Project Path="src/Console/Granulet.Console.csproj" />
+  </Folder>
+</Solution>
