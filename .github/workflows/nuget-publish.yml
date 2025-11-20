@@ -1,0 +1,40 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**/*.cs'
+      - 'src/**/*.csproj'
+      - '**/*.csproj'
+
+jobs:
+  publish:
+    name: Build and Publish to NuGet
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore granulet.sln
+      
+    - name: Build project
+      run: dotnet build granulet.sln --configuration Release --no-restore
+      
+    - name: Pack NuGet package
+      run: dotnet pack granulet.sln --configuration Release --no-build --output ./nupkg
+      
+    - name: Publish to NuGet.org
+      run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
